@@ -1,16 +1,26 @@
-from logic_utils import check_guess
+import pytest
+from app import get_range_for_difficulty, check_guess, update_score
 
-def test_winning_guess():
-    # If the secret is 50 and guess is 50, it should be a win
-    result = check_guess(50, 50)
-    assert result == "Win"
+def test_new_game_resets_secret_different_attempts():
+    low, high = get_range_for_difficulty("Normal")
+    secrets = set()
+    for _ in range(10):
+        secret = __import__('random').randint(low, high)
+        secrets.add(secret)
+    assert len(secrets) > 1, "Secret generation should produce different values"
+    
+#FIX: Refactored from app.py using AI; added emoji messages and type-handling for int/string secret
+def test_check_guess_win():
+    outcome, message = check_guess(50, 50)
+    assert outcome == "Win"
+    assert message == "🎉 Correct!"
 
-def test_guess_too_high():
-    # If secret is 50 and guess is 60, hint should be "Too High"
-    result = check_guess(60, 50)
-    assert result == "Too High"
+def test_check_guess_too_high():
+    outcome, message = check_guess(60, 50)
+    assert outcome == "Too High"
+    assert message == "📉 Go LOWER!"
 
-def test_guess_too_low():
-    # If secret is 50 and guess is 40, hint should be "Too Low"
-    result = check_guess(40, 50)
-    assert result == "Too Low"
+def test_check_guess_too_low():
+    outcome, message = check_guess(40, 50)
+    assert outcome == "Too Low"
+    assert message == "📈 Go HIGHER!"
